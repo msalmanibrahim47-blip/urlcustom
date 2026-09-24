@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Route handlers under /app/api/* and the dynamic /p/[slug] page are handled
+# automatically by the Next.js runtime plugin above — no manual redirects
+# or netlify/functions directory are required.
+
+[build.environment]
+  NEXT_TELEMETRY_DISABLED = "1"

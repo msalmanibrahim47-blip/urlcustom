@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --border: 220 13% 91%;
+  --bg: 0 0% 100%;
+  --surface: 0 0% 100%;
+  --surface-2: 220 20% 97%;
+  --fg: 222 20% 12%;
+  --muted: 220 9% 46%;
+  --accent: 239 84% 67%;
+  --accent-fg: 0 0% 100%;
+  --danger: 0 72% 51%;
+  --success: 142 71% 40%;
+}
+
+.dark {
+  --border: 220 13% 20%;
+  --bg: 222 22% 8%;
+  --surface: 222 20% 11%;
+  --surface-2: 222 18% 14%;
+  --fg: 220 20% 96%;
+  --muted: 220 9% 63%;
+  --accent: 239 84% 67%;
+  --accent-fg: 0 0% 100%;
+  --danger: 0 72% 58%;
+  --success: 142 71% 48%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--bg));
+  color: hsl(var(--fg));
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+.skeleton {
+  background: linear-gradient(90deg, hsl(var(--surface-2)) 25%, hsl(var(--border)) 37%, hsl(var(--surface-2)) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+}
+@keyframes skeleton-loading {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.85); } 60% { opacity: 1; transform: scale(1.03); } 100% { transform: scale(1); } }
+.anim-fade { animation: fadeIn 0.4s ease both; }
+.anim-slide { animation: slideUp 0.4s ease both; }
+.anim-bounce { animation: bounceIn 0.5s ease both; }
