@@ -5,7 +5,7 @@ import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { Copy, Eye, Pencil, MoreVertical, Trash2, Rocket, CopyPlus, PauseCircle } from 'lucide-react';
 import { duplicateProject, deleteProject, setProjectStatus } from '@/lib/actions/projects';
-import { ConfirmModal } from '@/components/ui';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { cx } from '@/lib/utils/misc';
 import Link from 'next/link';
 
