@@ -30,18 +30,20 @@ export interface CustomizationState {
   cta: CtaSettings;
   whatsapp: WhatsappSettings;
   fallbackBehavior: 'show_fallback' | 'redirect';
+  slug: string;
 }
 
 export function CustomizationPanel({
   state,
   onChange,
-  publicUrl
+  siteUrl
 }: {
   state: CustomizationState;
   onChange: (patch: Partial<CustomizationState>) => void;
-  publicUrl: string;
+  siteUrl: string;
 }) {
   const [tab, setTab] = useState<Tab>('Branding');
+  const publicUrl = `${siteUrl}/p/${state.slug}`;
 
   return (
     <div className="flex flex-col h-full">
@@ -67,7 +69,13 @@ export function CustomizationPanel({
         {tab === 'WhatsApp' && <WhatsappTab whatsapp={state.whatsapp} onChange={(w) => onChange({ whatsapp: w })} />}
         {tab === 'Appearance' && <AppearanceTab presentation={state.presentation} onChange={(p) => onChange({ presentation: p })} />}
         {tab === 'Advanced' && (
-          <AdvancedTab fallbackBehavior={state.fallbackBehavior} onChange={(f) => onChange({ fallbackBehavior: f })} publicUrl={publicUrl} />
+          <AdvancedTab
+            fallbackBehavior={state.fallbackBehavior}
+            onFallbackChange={(f) => onChange({ fallbackBehavior: f })}
+            slug={state.slug}
+            onSlugChange={(s) => onChange({ slug: s })}
+            publicUrl={publicUrl}
+          />
         )}
       </div>
     </div>
@@ -134,20 +142,31 @@ function WhatsappTab({ whatsapp, onChange }: { whatsapp: WhatsappSettings; onCha
 
 function AdvancedTab({
   fallbackBehavior,
-  onChange,
+  onFallbackChange,
+  slug,
+  onSlugChange,
   publicUrl
 }: {
   fallbackBehavior: 'show_fallback' | 'redirect';
-  onChange: (f: 'show_fallback' | 'redirect') => void;
+  onFallbackChange: (f: 'show_fallback' | 'redirect') => void;
+  slug: string;
+  onSlugChange: (s: string) => void;
   publicUrl: string;
 }) {
   return (
     <>
+      <Field label="URL Slug" hint="Letters, numbers and hyphens only, e.g. abc-restaurant. This is checked for uniqueness when you save.">
+        <TextInput
+          value={slug}
+          onChange={(e) => onSlugChange(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+          placeholder="abc-restaurant"
+        />
+      </Field>
       <Field label="Public URL"><TextInput readOnly value={publicUrl} onClick={(e) => (e.target as HTMLInputElement).select()} /></Field>
       <Field label="When embedding is blocked" hint="Some customer sites disallow being shown in a frame. Choose what visitors to the public URL see in that case.">
         <Select
           value={fallbackBehavior}
-          onChange={(v) => onChange(v as 'show_fallback' | 'redirect')}
+          onChange={(v) => onFallbackChange(v as 'show_fallback' | 'redirect')}
           options={[{ value: 'show_fallback', label: 'Show fallback page' }, { value: 'redirect', label: 'Redirect to original site' }]}
         />
       </Field>
