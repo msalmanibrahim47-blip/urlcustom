@@ -25,10 +25,9 @@ export function ProjectEditor({ project, settings, siteUrl }: { project: Project
     overlays: settings.overlays,
     cta: settings.cta,
     whatsapp: settings.whatsapp,
-    fallbackBehavior: project.fallback_behavior
+    fallbackBehavior: project.fallback_behavior,
+    slug: project.slug
   });
-
-  const publicUrl = `${siteUrl}/p/${project.slug}`;
 
   const settingsSaveState = useAutosave(
     { branding: state.branding, presentation: state.presentation, overlays: state.overlays, cta: state.cta, whatsapp: state.whatsapp },
@@ -36,14 +35,19 @@ export function ProjectEditor({ project, settings, siteUrl }: { project: Project
   );
   const fallbackSaveState = useAutosave({ fallback_behavior: state.fallbackBehavior }, (value) => updateProjectMeta(project.id, value));
   const nameSaveState = useAutosave({ project_name: projectName }, (value) => updateProjectMeta(project.id, value));
+  const slugSaveState = useAutosave({ slug: state.slug }, async (value) => {
+    const res = await updateProjectMeta(project.id, value);
+    if (!res.ok) toast.error(res.error ?? 'Could not update the URL slug.');
+    return res;
+  });
 
   const overallState = useMemo(() => {
-    const states = [settingsSaveState, fallbackSaveState, nameSaveState];
+    const states = [settingsSaveState, fallbackSaveState, nameSaveState, slugSaveState];
     if (states.includes('saving')) return 'saving';
     if (states.includes('error')) return 'error';
     if (states.includes('saved')) return 'saved';
     return 'idle';
-  }, [settingsSaveState, fallbackSaveState, nameSaveState]);
+  }, [settingsSaveState, fallbackSaveState, nameSaveState, slugSaveState]);
 
   function patch(p: Partial<CustomizationState>) {
     setState((s) => ({ ...s, ...p }));
@@ -79,7 +83,7 @@ export function ProjectEditor({ project, settings, siteUrl }: { project: Project
 
         <div className="flex items-center gap-2 shrink-0">
           <Link
-            href={`/p/${project.slug}`}
+            href={`/p/${state.slug}`}
             target="_blank"
             className="inline-flex items-center gap-1.5 text-sm font-medium rounded-lg border px-3 py-1.5 hover:bg-surface-2 transition"
           >
@@ -119,7 +123,7 @@ export function ProjectEditor({ project, settings, siteUrl }: { project: Project
         </div>
 
         <div className="hidden lg:block w-80 shrink-0 border-l bg-surface">
-          <CustomizationPanel state={state} onChange={patch} publicUrl={publicUrl} />
+          <CustomizationPanel state={state} onChange={patch} siteUrl={siteUrl} />
         </div>
       </div>
 
@@ -131,7 +135,7 @@ export function ProjectEditor({ project, settings, siteUrl }: { project: Project
               <span className="font-medium text-sm">Customize</span>
               <button onClick={() => setPanelOpen(false)} className="text-muted"><X className="h-5 w-5" /></button>
             </div>
-            <CustomizationPanel state={state} onChange={patch} publicUrl={publicUrl} />
+            <CustomizationPanel state={state} onChange={patch} siteUrl={siteUrl} />
           </div>
         </div>
       )}
